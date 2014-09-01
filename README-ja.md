@@ -85,14 +85,14 @@ Table of contents
 Install
 =======
 
-最新の[Bacon.js](https://raw.github.com/baconjs/bacon.js/master/dist/Bacon.js)はここからダウンロードできます。
+最新の[Bacon.js](https://raw.github.com/baconjs/bacon.js/master/dist/Bacon.js)はここからダウンロードできる。
 
-Version 0.7.12 は cdnjs でもホスティングされています。
+Version 0.7.12 は cdnjs でもホスティングされている。
 
     http://cdnjs.cloudflare.com/ajax/libs/bacon.js/0.7.12/bacon.js
     http://cdnjs.cloudflare.com/ajax/libs/bacon.js/0.7.12/bacon.min.js
 
-Visual Studio を使っている人は NuGet 経由でも手に入れることが出来ます。
+Visual Studio を使っている人は NuGet 経由でも手に入れることができる。
 
     https://www.nuget.org/packages/Bacon.js/0.7.16
 

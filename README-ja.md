@@ -107,30 +107,26 @@ Visual Studio を使っている人は NuGet 経由でも手に入れること�
 Intro
 =====
 
-The idea of Functional Reactive Programming is quite well described by Conal Elliot at [Stack Overflow](http://stackoverflow.com/questions/1028250/what-is-functional-reactive-programming/1030631#1030631).
+Functional Reactive Programming のアイデアは Conal Elliot が[Stack Overflow](http://stackoverflow.com/questions/1028250/what-is-functional-reactive-programming/1030631#1030631)に非常にわかりやすく書いている。
 
-Bacon.js is a library for functional reactive programming. Or let's say it's a library for
-working with [events](#event) and dynamic values (which are called [Properties](#property) in Bacon.js).
+Bacon.js はFunctional Reactive Programmingのライブラリであり、
+言い換えるなら[イベント](#event)と動的に変化する値(これをBacon.jsでは[Properties](#property)と呼ぶ)を扱うためのライブラリと言べる。
 
-Anyways, you can wrap an event source,
-say "mouse clicks on an element" into an [`EventStream`](#eventstream) by saying
+さて Bacon.js を使えば以下のように「要素をクリックする」のようなイベントを[`EventStream`](#eventstream)にラップすることができる。
 
 ```js
-var cliks = $("h1").asEventStream("click")
+var clicks = $("h1").asEventStream("click")
 ```
 
-Each EventStream represents a stream of events. It is an Observable object, meaning
-that you can listen to events in the stream using, for instance, the [`onValue`](#stream-onvalue) method
-with a callback. Like this:
+それぞれの[`EventStream`](#eventstream)はイベントの流れ(ストリーム)を表しており、流れてくるイベントは例えば[`onValue`](#stream-onvalue)メソッドとコールバック関数を使えば次のように観測することができる。
 
 ```js
 cliks.onValue(function() { alert("you clicked the h1 element") })
 ```
 
-But you can do neater stuff too. The Bacon of bacon.js is in that you can transform,
-filter and combine these streams in a multitude of ways (see API below). The methods [`map`](#observable-map),
-[`filter`](#observable-filter), for example, are similar to same functions in functional list programming
-(like [Underscore](http://documentcloud.github.com/underscore/)). So, if you say
+さらにもっとスッキリと書ける。
+Bacon.jsではストリームをいろんな方法で変換し濾過し結合することができる（後述するAPIで詳しく述べる）。
+例えば[`map`](#observable-map)や[`filter`](#observable-filter)メソッドは([Underscore](http://documentcloud.github.com/underscore/)のような)関数型プログラミングのそれと似ている。
 
 ```js
 var plus = $("#plus").asEventStream("click").map(1)
@@ -138,20 +134,18 @@ var minus = $("#minus").asEventStream("click").map(-1)
 var both = plus.merge(minus)
 ```
 
-.. you'll have a stream that will output the number 1 when the "plus" button is clicked
-and another stream outputting -1 when the "minus" button is clicked. The `both` stream will
-be a merged stream containing events from both the plus and minus streams. This allows
-you to subscribe to both streams with one handler:
+ここではプラスボタンがクリックされたら1を出力するストリームとマイナスボタンがクリックされたら-1を出力するストリームがあり、bothはplusとminusとの両方のイベントの持つ結合されたストリームだ。
+これによって２つのストリームのイベントを一つのハンドラで観測することができる。
 
 ```js
 both.onValue(function(val) { /* val will be 1 or -1 */ })
 ```
 
-In addition to EventStreams, bacon.js has a thing called [`Property`](#property), that is almost like an
-EventStream, but has a "current value". So things that change and have a current state are
-Properties, while things that consist of discrete events are EventStreams. You could think
-mouse clicks as an EventStream and mouse position as a Property. You can create Properties from
-an EventStream with [`scan`](#observable-scan) or [`toProperty`](#stream-toproperty) methods. So, let's say
+EventStream に加えて Bacon.js には[`Property`](#property)と呼ばれるものがある。
+これはEventStreamに似ているが、”現在の値”を持っている点で違う。
+つまり離散的なイベントから成るものがEventStreamであったのに対し、変化するし今の状態を持っているものがPropertyだ。
+マウスのクリックはEventStreamでマウスの位置はPropertyと考えることができる。
+EventoStreamから[`scan`](#observable-scan) や [`toProperty`](#stream-toproperty) メソッドを使ってPropertyを作ることができる。
 
 ```js
 function add(x, y) { return x + y }
@@ -159,34 +153,31 @@ var counter = both.scan(0, add)
 counter.onValue(function(sum) { $("#sum").text(sum) })
 ```
 
-The `counter` property will contain the sum of the values in the `both` stream, so it's practically
-a counter that can be increased and decreased using the plus and minus buttons. The [`scan`](#observable-scan) method
-was used here to calculate the "current sum" of events in the `both` stream, by giving a "seed value"
-`0` and an "accumulator function" `add`. The scan method creates a property that starts with the given
-seed value and on each event in the source stream applies the accumulator function to the current
-property value and the new value from the stream.
+`counter`は`both`ストリームの値の合計を持っていてこれは実質的にカウンターでありプラスボタンとマイナスボタンによって増やしたり減らしたりすることができる。
+[`scan`](#observable-scan)メソッドはここでは"シードの値"である`0`と"蓄積関数"である`add`を引数に`both`ストリームのイベントの”現在の合計”を計算するのに使われている。
+[`scan`](#observable-scan)メソッドは与えられたシードの値から始まり入力のストリームからのそれぞれのイベントで蓄積関数に現在のPropertyの値とストリームからの新しい値を作用させて新しいPropertyを作っている。
 
-Properties can be very conveniently used for assigning values and attributes to DOM elements with JQuery.
-Here we assign the value of a property as the text of a span element whenever it changes:
+PropertyはJQueryでDOM要素に値や属性を割り当てたりするのに非常に使いやすい。
+以下ではPropertyが変化するたびにその値を文字列としてspan要素に割り当てている。
 
 ```js
 property.assign($("span"), "text")
 ```
 
-Hiding and showing the same span depending on the content of the property value is equally straightforward
+同じspanをPropertyの値に従って表示非表示にするのは同じように簡単である。
 
 ```js
 function hiddenForEmptyValue(value) { return value == "" ? "hidden" : "visible" }
 property.map(hiddenForEmptyValue).assign($("span"), "css", "visibility")
 ```
 
-In the example above a property value of "hello" would be mapped to "visible", which in turn would result in Bacon calling
+上の例では"hello"というPropertyの値は"visible"に写され、次にBaconによって以下ように実行される
 
 ```js
 $("span").css("visibility", "visible")
 ```
 
-For an actual tutorial, please check out my [blog posts](http://nullzzz.blogspot.fi/2012/11/baconjs-tutorial-part-i-hacking-with.html)
+もし実用的なチュートリアルが読みたいなら私の[ブログ記事](http://nullzzz.blogspot.fi/2012/11/baconjs-tutorial-part-i-hacking-with.html)を見て頂きたい。
 
 API
 ===

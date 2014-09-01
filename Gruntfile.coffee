@@ -58,6 +58,8 @@ module.exports = (grunt) ->
 
   grunt.registerTask 'readme', 'Generate README.md', ->
     fs = require 'fs'
-    readmedoc = require './readme-src.coffee'
-    readmegen = require './readme/readme.coffee'
+    readmedoc   = require './readme-src.coffee'
+    readmejadoc = require './readme-ja-src.coffee'
+    readmegen   = require './readme/readme.coffee'
     fs.writeFileSync('README.md', readmegen readmedoc)
+    fs.writeFileSync('README-ja.md', readmegen readmejadoc)
